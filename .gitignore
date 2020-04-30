@@ -1,4 +1,6 @@
 .vs
-bin/
-obj/
+bin
+obj
 *.user
+build
+.vscode
