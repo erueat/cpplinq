@@ -1,11 +1,7 @@
 #include "gtest/gtest.h"
 
-#define USE_LINQ_MACRO
-#include "linq.h"
-
-using namespace zen;
-using std::vector;
-using std::tuple;
+#define USE_CPPLINQ_MACRO
+#include "cpplinq.h"
 
 struct Table
 {
@@ -13,16 +9,16 @@ struct Table
     int y;
 };
 
-TEST(Linq, basic)
+TEST(CppLinq, basic)
 {
-    vector<Table> numbers = { {1, 10}, {2, 12}, {3, 11}, {4, 13} };
+    std::vector<Table> numbers = { {1, 10}, {2, 12}, {3, 11}, {4, 13} };
 
-    auto result = LINQ(Table)
+    auto result = CPPLINQ(Table)
         FROM (numbers)
         WHERE (o.x % 2 == 0)
         ORDERBY (o.x)
         SELECT (int, int) ON (o.x, o.y * o.y);
 
-    vector<tuple<int,int>> expectedResult = { { 4, 169 }, { 2, 144 } };
+    std::vector<std::tuple<int,int>> expectedResult = { { 4, 169 }, { 2, 144 } };
     EXPECT_EQ(result, expectedResult); 
 }

@@ -5,11 +5,11 @@
 namespace zen
 {
 template <typename T>
-class Linq
+class CppLinq
 {
 public:
     template <typename Array>
-    Linq& from(Array& array)
+    CppLinq& from(Array& array)
     {
         for (T& element : array)
             m_array.push_back(element);
@@ -17,7 +17,7 @@ public:
     }
 
     template <typename Condition>
-    Linq& where(Condition condition)
+    CppLinq& where(Condition condition)
     {
         std::vector<T> array;
         for (T element : m_array)
@@ -32,7 +32,7 @@ public:
     }
 
     template <typename GetOrderKey>    
-    Linq& orderBy(GetOrderKey getOrderKey)
+    CppLinq& orderBy(GetOrderKey getOrderKey)
     {
         auto sortFunc = [&](const T& l, const T& r){ return (getOrderKey(l) > getOrderKey(r)); };
         std::sort(m_array.begin(), m_array.end(), sortFunc);
@@ -53,10 +53,11 @@ public:
 private:
     std::vector<T> m_array;
 };
+};
 
-#ifdef USE_LINQ_MACRO
+#ifdef USE_CPPLINQ_MACRO
 
-#define LINQ(Type) Linq<Type>()
+#define CPPLINQ(Type) zen::CppLinq<Type>()
 #define FROM(o) .from(o)
 #define WHERE(condition) .where([](const auto& o) { return condition; })
 #define ORDERBY(key) .orderBy([](const auto& o) { return key; })
@@ -64,4 +65,3 @@ private:
 #define ON(...) ([](const auto& o) { return std::make_tuple(__VA_ARGS__); })
 
 #endif
-};

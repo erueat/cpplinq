@@ -27,11 +27,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\linq.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\gtest\include\gtest\gtest.h">
       <Filter>gtest\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cpplinq.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\gtest\include\gtest\gtest.h" />
-    <ClInclude Include="..\..\include\linq.h" />
+    <ClInclude Include="..\..\include\cpplinq.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\gtest\src\gtest-all.cc" />
