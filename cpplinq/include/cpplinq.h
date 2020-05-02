@@ -194,10 +194,11 @@ public:
         return *this;
     }
 
-    template <typename... Types, typename SelectFunc>
-    std::vector<std::tuple<Types...>> select(SelectFunc selectFunc)
+    template <typename SelectFunc>
+    auto select(SelectFunc selectFunc)
     {
-        std::vector<std::tuple<Types...>> result;
+        using ReturnType = decltype(selectFunc(std::declval<const T&>()));
+        std::vector<ReturnType> result;
         size_t count = m_takeCount;
         for (const T& ele : *this)
         {
@@ -241,7 +242,6 @@ private:
 #define COUNT() .count()
 #define SUM() .sum()
 #define AVERAGE() .average()
-#define SELECT(...) .select<__VA_ARGS__>
-#define ON(...) ([](const auto& o) { return std::make_tuple(__VA_ARGS__); })
+#define SELECT(...) .select([](const auto& o) { return std::make_tuple(__VA_ARGS__); })
 
 #endif

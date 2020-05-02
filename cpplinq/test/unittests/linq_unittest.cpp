@@ -16,7 +16,7 @@ TEST(CppLinq, basic)
     auto result = CPPLINQ(Record)
         FROM (records)
         WHERE (o.x % 2 == 0)
-        SELECT (int, int) ON (o.x, o.y * o.y);
+        SELECT (o.x, o.y * o.y);
 
     std::vector<std::tuple<int,int>> expectedResult = { { 2, 144 }, { 4, 169 } };
     EXPECT_EQ(result, expectedResult); 
@@ -30,7 +30,7 @@ TEST(CppLinq, take)
         FROM (numbers)
         WHERE (o % 2 == 0)
         TAKE (3)
-        SELECT (int) ON (o);
+        SELECT (o);
 
     std::vector<std::tuple<int>> expectedResult = { { 2 }, { 4 }, { 6 } };
     EXPECT_EQ(result, expectedResult);
@@ -44,7 +44,7 @@ TEST(CppLinq, skip)
         FROM (numbers)
         WHERE (o % 2 == 0)
         SKIP (3)
-        SELECT (int) ON (o);
+        SELECT (o);
 
     std::vector<std::tuple<int>> expectedResult = { { 8 }, { 10 } };
     EXPECT_EQ(result, expectedResult);
@@ -58,7 +58,7 @@ TEST(CppLinq, orderBy)
         FROM (numbers)
         WHERE (o % 2 == 0)
         ORDERBY (o)
-        SELECT (int) ON (o);
+        SELECT (o);
 
     std::vector<std::tuple<int>> expectedResult = { { 2 }, { 4 }, { 6 }, { 8 }, { 10 } };
     EXPECT_EQ(result, expectedResult);
@@ -67,7 +67,7 @@ TEST(CppLinq, orderBy)
         FROM (numbers)
         WHERE (o % 2 == 0)
         ORDERBY (o, DESCEND)
-        SELECT (int) ON (o);
+        SELECT (o);
 
     std::vector<std::tuple<int>> expectedResult2 = { { 10 }, { 8 }, { 6 }, { 4 }, { 2 } };
     EXPECT_EQ(result2, expectedResult2);

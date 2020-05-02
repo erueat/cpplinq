@@ -25,7 +25,7 @@ auto result = CPPLINQ(Records)
     FROM (records)
     WHERE (o.x % 2 == 0)
     ORDERBY (o.x, DESCEND)
-    SELECT (int, int) ON (o.x, o.y * o.y);
+    SELECT (o.x, o.y * o.y);
 ```
 
 The result would be ```{ { 4, 169 }, { 2, 144 } }``` with type ```std::vector<std::tuple<int, int>>```.

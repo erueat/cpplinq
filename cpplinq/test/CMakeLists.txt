@@ -15,6 +15,6 @@ file(GLOB_RECURSE src "${BASE_PATH}/src/*.cpp" "${BASE_PATH}/unittests/*.cpp" "$
 
 set (EXECUTABLE_OUTPUT_PATH "${BASE_PATH}/bin")
 
-set (CMAKE_CXX_FLAGS "-std=c++17")
+set (CMAKE_CXX_FLAGS "-std=c++17 -g")
 
 add_executable(cpplinq-unittest ${src})
