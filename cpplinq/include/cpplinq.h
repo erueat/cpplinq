@@ -13,15 +13,20 @@ enum Order
     Descend = 1
 };
 
-template <typename T, typename Condition = DefaultCondition<T>>
+template <typename ContainerType>
+using ElementType = typename std::decay<decltype(*(std::begin(std::declval<ContainerType>())))>::type;
+
+template <typename ContainerType, typename Condition = DefaultCondition<ElementType<ContainerType>>>
 class CppLinq
 {
+    using T = ElementType<ContainerType>;
     class iterator
     {
+        using IteratorType = decltype(std::begin(std::declval<ContainerType>()));
     public:
-        iterator(std::vector<T>& o, typename std::vector<T>::const_iterator it, Condition cond) : list(o), iter(it), condition(cond)
+        iterator(ContainerType& o, IteratorType it, Condition cond) : container(o), iter(it), condition(cond)
         {
-            while (iter != list.end() && !condition(*iter))
+            while (iter != std::end(container) && !condition(*iter))
             {
                 iter++;
             }
@@ -32,7 +37,7 @@ class CppLinq
             do
             {
                 iter++;
-            } while (iter != list.end() && !condition(*iter));
+            } while (iter != std::end(container) && !condition(*iter));
             return *this;
         }
 
@@ -42,7 +47,7 @@ class CppLinq
             do
             {
                 iter++;
-            } while (iter != list.end() && !condition(*iter));
+            } while (iter != std::end(container) && !condition(*iter));
             return it;
         }
 
@@ -59,7 +64,7 @@ class CppLinq
         iterator operator-(size_t steps)
         {
             iterator it = *this;
-            while (steps != 0 && it.iter != list.begin())
+            while (steps != 0 && it.iter != std::begin(container))
             {
                 if (condition(*iter))
                 {
@@ -98,36 +103,26 @@ class CppLinq
         }
 
     private:
-        std::vector<T>& list;
-        typename std::vector<T>::const_iterator iter;
+        ContainerType& container;
+        IteratorType iter;
         Condition condition;
     };
 public:
-    CppLinq()
+    CppLinq(ContainerType& container): m_container(container)
     {
         m_condition = [](const T&) { return true; };
     }
 
-    CppLinq(Condition& condition, std::vector<T>& v) : m_array(std::move(v)), m_condition(condition)
+    CppLinq(Condition& condition, ContainerType& container) : m_container(container), m_condition(condition)
     {
     }
 
-    CppLinq(const CppLinq& r) : m_condition(r.m_condition)
+    CppLinq(const CppLinq& r) : m_container(r.m_container), m_condition(r.m_condition)
     {
-        m_array = r.m_array;
     }
 
-    CppLinq(CppLinq&& r) : m_condition(r.m_condition)
+    CppLinq(CppLinq&& r) : m_container(r.m_container), m_condition(r.m_condition)
     {
-        m_array = std::move(r.m_array);
-    }
-
-    template <typename Array>
-    CppLinq& from(Array& array)
-    {
-        for (T& element : array)
-            m_array.push_back(element);
-        return *this;
     }
 
     CppLinq& take(size_t count)
@@ -180,9 +175,9 @@ public:
     }
 
     template <typename Condition2>
-    CppLinq<T, Condition2> where(Condition2 condition)
+    CppLinq<ContainerType, Condition2> where(Condition2 condition)
     {
-        CppLinq<T, Condition2> linq(condition, m_array); 
+        CppLinq<ContainerType, Condition2> linq(condition, m_container); 
         return linq;
     }
 
@@ -190,7 +185,7 @@ public:
     CppLinq& orderBy(GetOrderKey getOrderKey, Order order = Ascend)
     {
         auto sortFunc = [&](const T& l, const T& r){ return order == Ascend ? (getOrderKey(l) < getOrderKey(r)) : (getOrderKey(l) > getOrderKey(r)); };
-        std::sort(m_array.begin(), m_array.end(), sortFunc);
+        std::sort(m_container.begin(), m_container.end(), sortFunc);
         return *this;
     }
 
@@ -213,25 +208,30 @@ public:
 protected:
     iterator begin()
     {
-        return iterator(m_array, m_array.begin(), m_condition) + m_skipCount;
+        return iterator(m_container, std::begin(m_container), m_condition) + m_skipCount;
     }
 
     iterator end()
     {
-        return iterator(m_array, m_array.end(), m_condition);
+        return iterator(m_container, std::end(m_container), m_condition);
     }
 private:
-    std::vector<T> m_array;
+    ContainerType& m_container;
     size_t m_skipCount = 0;
     size_t m_takeCount = SIZE_T_MAX;
     Condition m_condition;
 };
+
+template <typename ContainerType>
+auto from(ContainerType& container)
+{
+    return CppLinq<ContainerType>(container);
+}
 };
 
 #ifdef USE_CPPLINQ_MACRO
 
-#define CPPLINQ(Type) zen::CppLinq<Type>()
-#define FROM(o) .from(o)
+#define FROM(o) zen::from(o)
 #define WHERE(condition) .where([](const auto& o) { return condition; })
 #define ORDERBY(key, Args...) .orderBy([](const auto& o) { return key; }, ##Args)
 #define DESCEND zen::Descend
