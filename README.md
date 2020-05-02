@@ -21,8 +21,7 @@ struct Record
 
 std::vector<Record> records = { {1, 10}, {2, 12}, {3, 11}, {4, 13} };
 
-auto result = CPPLINQ(Records)
-    FROM (records)
+auto result = FROM (records)
     WHERE (o.x % 2 == 0)
     ORDERBY (o.x, DESCEND)
     SELECT (o.x, o.y * o.y);

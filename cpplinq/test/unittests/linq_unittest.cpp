@@ -118,6 +118,18 @@ TEST(CppLinq, average)
     EXPECT_EQ(result, 4);
 }
 
+TEST(CppLinq, supportCArray)
+{
+    int numbers[] = { 1, 2, 3, 4 };
+
+    auto result = FROM (numbers)
+        WHERE (o % 2 == 0)
+        SELECT (o);
+
+    std::vector<std::tuple<int>> expectedResult = { 2, 4 };
+    EXPECT_EQ(result, expectedResult);
+}
+
 TEST(CppLinq, supportList)
 {
     std::list<int> numbers = { 1, 2, 3, 4 };
