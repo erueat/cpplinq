@@ -1,5 +1,7 @@
 # cpplinq
 
+## Introduction
+
 cpplinq is a tool aiming to simulate .NET Framework LINQ with c++.
 
 With cpplinq, you will be able to use SQL-like grammar to do some search in an array.
@@ -8,7 +10,6 @@ For example, you can use codes below to search items whose x value is even,
 order results with x descending, and get x and y^2 for each matched item.
 
 ```cpp
-
 #define USE_CPPLINQ_MACRO
 #include "cpplinq.h"
 
@@ -28,3 +29,17 @@ auto result = CPPLINQ(Records)
 ```
 
 The result would be ```{ { 4, 169 }, { 2, 144 } }``` with type ```std::vector<std::tuple<int, int>>```.
+
+## Supported Clauses
+
+* where
+* orderBy
+* select
+* take
+* skip
+* count
+* first
+* last
+* sum
+* average
+
