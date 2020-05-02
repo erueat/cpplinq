@@ -70,6 +70,18 @@ class CppLinq
             return it;
         }
 
+        size_t operator-(const iterator& r)
+        {
+            int count = 0;
+            iterator it = r;
+            while (it != *this)
+            {
+                ++it;
+                count++;
+            }
+            return count;
+        }
+
         bool operator==(const iterator& r)
         {
             return iter == r.iter;
@@ -140,6 +152,33 @@ public:
         return *(end() - 1);
     }
 
+    size_t count()
+    {
+        return end() - begin();
+    }
+
+    T sum()
+    {
+        T sum = 0;
+        for (const T& element : *this)
+        {
+            sum += element;
+        }
+        return sum;
+    }
+
+    T average()
+    {
+        T sum = 0;
+        int count = 0;
+        for (const T& element : *this)
+        {
+            sum += element;
+            count++;
+        }
+        return sum / (T)count;
+    }
+
     template <typename Condition2>
     CppLinq<T, Condition2> where(Condition2 condition)
     {
@@ -199,6 +238,9 @@ private:
 #define SKIP(count) .skip(count)
 #define FIRST .first()
 #define LAST .last()
+#define COUNT .count()
+#define SUM .sum()
+#define AVERAGE .average()
 #define SELECT(...) .select<__VA_ARGS__>
 #define ON(...) ([](const auto& o) { return std::make_tuple(__VA_ARGS__); })
 

@@ -89,3 +89,39 @@ TEST(CppLinq, firstAndLast)
     
     EXPECT_EQ(result2, 3);
 }
+
+TEST(CppLinq, count)
+{
+    std::vector<int> numbers = { 1, 2, 3, 4, 5, 6 };
+
+    auto result = CPPLINQ(int)
+        FROM (numbers)
+        WHERE (o % 2 == 0)
+        COUNT;
+    
+    EXPECT_EQ(result, 3);
+}
+
+TEST(CppLinq, sum)
+{
+    std::vector<int> numbers = { 1, 2, 3, 4, 5, 6 };
+
+    auto result = CPPLINQ(int)
+        FROM (numbers)
+        WHERE (o % 2 == 0)
+        SUM;
+    
+    EXPECT_EQ(result, 12);
+}
+
+TEST(CppLinq, average)
+{
+    std::vector<int> numbers = { 1, 2, 3, 4, 5, 6 };
+
+    auto result = CPPLINQ(int)
+        FROM (numbers)
+        WHERE (o % 2 == 0)
+        AVERAGE;
+    
+    EXPECT_EQ(result, 4);
+}
