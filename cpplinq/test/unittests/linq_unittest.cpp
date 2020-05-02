@@ -3,18 +3,18 @@
 #define USE_CPPLINQ_MACRO
 #include "cpplinq.h"
 
-struct Table
-{
-    int x;
-    int y;
-};
-
 TEST(CppLinq, basic)
 {
-    std::vector<Table> numbers = { {1, 10}, {2, 12}, {3, 11}, {4, 13} };
+    struct Record
+    {
+        int x;
+        int y;
+    };
 
-    auto result = CPPLINQ(Table)
-        FROM (numbers)
+    std::vector<Record> records = { {1, 10}, {2, 12}, {3, 11}, {4, 13} };
+
+    auto result = CPPLINQ(Record)
+        FROM (records)
         WHERE (o.x % 2 == 0)
         SELECT (int, int) ON (o.x, o.y * o.y);
 

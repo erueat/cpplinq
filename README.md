@@ -12,18 +12,18 @@ order results with x descending, and get x and y^2 for each matched item.
 #define USE_CPPLINQ_MACRO
 #include "cpplinq.h"
 
-struct Table
+struct Record
 {
     int x;
     int y;
 };
 
-std::vector<Table> numbers = { {1, 10}, {2, 12}, {3, 11}, {4, 13} };
+std::vector<Record> records = { {1, 10}, {2, 12}, {3, 11}, {4, 13} };
 
-auto result = CPPLINQ(Table)
-    FROM (numbers)
+auto result = CPPLINQ(Records)
+    FROM (records)
     WHERE (o.x % 2 == 0)
-    ORDERBY (o.x)
+    ORDERBY (o.x, DESCEND)
     SELECT (int, int) ON (o.x, o.y * o.y);
 ```
 
