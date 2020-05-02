@@ -236,11 +236,11 @@ private:
 #define DESCEND zen::Descend
 #define TAKE(count) .take(count)
 #define SKIP(count) .skip(count)
-#define FIRST .first()
-#define LAST .last()
-#define COUNT .count()
-#define SUM .sum()
-#define AVERAGE .average()
+#define FIRST() .first()
+#define LAST() .last()
+#define COUNT() .count()
+#define SUM() .sum()
+#define AVERAGE() .average()
 #define SELECT(...) .select<__VA_ARGS__>
 #define ON(...) ([](const auto& o) { return std::make_tuple(__VA_ARGS__); })
 

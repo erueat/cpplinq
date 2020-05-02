@@ -79,13 +79,13 @@ TEST(CppLinq, firstAndLast)
 
     auto result = CPPLINQ(int)
         FROM (numbers)
-        FIRST;
+        FIRST();
     
     EXPECT_EQ(result, 1);
 
     auto result2 = CPPLINQ(int)
         FROM (numbers)
-        LAST;
+        LAST();
     
     EXPECT_EQ(result2, 3);
 }
@@ -97,7 +97,7 @@ TEST(CppLinq, count)
     auto result = CPPLINQ(int)
         FROM (numbers)
         WHERE (o % 2 == 0)
-        COUNT;
+        COUNT();
     
     EXPECT_EQ(result, 3);
 }
@@ -109,7 +109,7 @@ TEST(CppLinq, sum)
     auto result = CPPLINQ(int)
         FROM (numbers)
         WHERE (o % 2 == 0)
-        SUM;
+        SUM();
     
     EXPECT_EQ(result, 12);
 }
@@ -121,7 +121,7 @@ TEST(CppLinq, average)
     auto result = CPPLINQ(int)
         FROM (numbers)
         WHERE (o % 2 == 0)
-        AVERAGE;
+        AVERAGE();
     
     EXPECT_EQ(result, 4);
 }
