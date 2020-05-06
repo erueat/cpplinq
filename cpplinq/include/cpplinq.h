@@ -7,7 +7,7 @@ namespace zen
 template <typename T>
 using DefaultCondition = bool(*)(const T&);
 
-enum Order
+enum class Order
 {
     Ascend = 0,
     Descend = 1
@@ -175,9 +175,9 @@ public:
     }
 
     template <typename GetOrderKey>    
-    CppLinq& orderBy(GetOrderKey getOrderKey, Order order = Ascend)
+    CppLinq& orderBy(GetOrderKey getOrderKey, Order order = Order::Ascend)
     {
-        auto sortFunc = [&](const T& l, const T& r){ return order == Ascend ? (getOrderKey(l) < getOrderKey(r)) : (getOrderKey(l) > getOrderKey(r)); };
+        auto sortFunc = [&](const T& l, const T& r){ return order == Order::Ascend ? (getOrderKey(l) < getOrderKey(r)) : (getOrderKey(l) > getOrderKey(r)); };
         std::sort(m_begin, m_end, sortFunc);
         return *this;
     }
@@ -212,14 +212,14 @@ private:
     IteratorType m_begin;
     IteratorType m_end;
     size_t m_skipCount = 0;
-    size_t m_takeCount = SIZE_T_MAX;
+    size_t m_takeCount = SIZE_MAX;
     Condition m_condition;
 };
 
 template <typename IteratorType>
 auto from(IteratorType begin, IteratorType end)
 {
-    return CppLinq(begin, end);
+    return CppLinq<IteratorType>(begin, end);
 }
 };
 
@@ -227,8 +227,9 @@ auto from(IteratorType begin, IteratorType end)
 
 #define FROM(o) zen::from(std::begin(o), std::end(o))
 #define WHERE(condition) .where([](const auto& o) { return condition; })
-#define ORDERBY(key, Args...) .orderBy([](const auto& o) { return key; }, ##Args)
-#define DESCEND zen::Descend
+#define VA_ARGS(...) , ##__VA_ARGS__
+#define ORDERBY(key, ...) .orderBy([](const auto& o) { return key; } VA_ARGS(__VA_ARGS__))
+#define DESCEND zen::Order::Descend
 #define TAKE(count) .take(count)
 #define SKIP(count) .skip(count)
 #define FIRST() .first()
