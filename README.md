@@ -41,4 +41,4 @@ The result would be ```{ { 4, 169 }, { 2, 144 } }``` with type ```std::vector<st
 * last
 * sum
 * average
-
+* join (support inner join for at most 4 tables)
