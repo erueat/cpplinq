@@ -141,3 +141,44 @@ TEST(CppLinq, supportList)
     std::vector<std::tuple<int>> expectedResult = { 2, 4 };
     EXPECT_EQ(result, expectedResult);
 }
+
+TEST(CppLinq, join)
+{
+    struct Record1
+    {
+        int x;
+        int y;
+    };
+
+    struct Record2
+    {
+        int a;
+        int b;
+    };
+
+    struct Record3
+    {
+        int m;
+        int n;
+    };
+
+    Record1 records1[] = { {1, 100}, {2, 200}, {1, 300} };
+    Record2 records2[] = { {1, 3}, {3, 44} };
+
+    auto result1 = FROM(records1)
+        JOIN(records2) ON (o1.x == o2.a)
+        SELECT2(o1.x, o1.y, o2.b);
+
+    std::vector<std::tuple<int, int, int>> expectedResult1 = { { 1, 100, 3 }, { 1, 300, 3 } };
+    EXPECT_EQ(result1, expectedResult1);
+
+    Record3 records3[] = { {0, 100}, {2, 22} };
+
+    auto result2 = FROM(records1)
+        JOIN(records2) ON (o1.x == o2.a)
+        JOIN2(records3) ON (o1.y == o3.n)
+        SELECT3(o1.x, o1.y, o2.b, o3.m);
+    
+    std::vector<std::tuple<int, int, int, int>> expectedResult2 = { { 1, 100, 3, 0 } };
+    EXPECT_EQ(result2, expectedResult2);
+}
