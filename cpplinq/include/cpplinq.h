@@ -186,12 +186,12 @@ public:
 
     iterator<IterType, WhereCondition> begin()
     {
-        return iterator(m_begin, m_end, m_begin, m_condition) + m_skipCount;
+        return iterator<IterType, WhereCondition>(m_begin, m_end, m_begin, m_condition) + m_skipCount;
     }
 
     iterator<IterType, WhereCondition> end()
     {
-        return iterator(m_begin, m_end, m_end, m_condition);
+        return iterator<IterType, WhereCondition>(m_begin, m_end, m_end, m_condition);
     }
 
 protected:
