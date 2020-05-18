@@ -10,7 +10,7 @@ template <typename IterType>
 using ElementType = typename std::decay<decltype(*std::declval<IterType>())>::type;
 
 template <typename EleType>
-using IteratorType = typename std::decay<decltype(std::begin(std::declval<std::vector<EleType>>()))>::type;
+using IteratorType = typename std::decay<decltype(std::vector<EleType>().begin())>::type;
 
 template <typename T>
 using DefaultCondition = bool(*)(const T&);
@@ -230,6 +230,13 @@ public:
         super::m_end = m_data.end();
     }
 
+    CppLinq(std::vector<Data<T1, T2, T3, T4>>& v, WhereCondition condition) : super(condition)
+    {
+        std::swap(m_data, v);
+        super::m_begin = m_data.begin();
+        super::m_end = m_data.end();
+    }
+
     void addData(const Data<T1, T2, T3, T4>& v)
     {
         m_data.push_back(v);
@@ -238,9 +245,10 @@ public:
     }
 
     template <typename Condition2>
-    CppLinq<T1, T2, T3, T4, Condition2> where(Condition2 condition)
+    auto where(Condition2 condition)
     {
-        CppLinq<T1, T2, T3, T4, Condition2> linq(m_data, condition);
+        auto cond = [&](const auto& o) -> bool { return condition(o.var1, o.var2, o.var3, o.var4); };
+        CppLinq<T1, T2, T3, T4, decltype(cond)> linq(m_data, cond);
         return linq;
     }
 
@@ -249,7 +257,7 @@ public:
     {
         auto sortFunc = [&](const auto& l, const auto& r){ 
                 auto lKey = getOrderKey(l.var1, l.var2, l.var3, l.var4);
-                auto rKey = getOrderKey(r.var2, r.var2, r.var3, r.var4);
+                auto rKey = getOrderKey(r.var1, r.var2, r.var3, r.var4);
                 return order == Order::Ascend ? lKey < rKey : lKey > rKey;
             };
         std::sort(super::m_begin, super::m_end, sortFunc);
@@ -300,7 +308,7 @@ public:
         super::m_end = m_data.end();
     }
 
-    CppLinq(std::vector<Data<T1, T2, T3>>& v) : super([](const auto&){return true;})
+    CppLinq(std::vector<Data<T1, T2, T3>>& v, WhereCondition condition) : super(condition)
     {
         std::swap(m_data, v);
         super::m_begin = m_data.begin();
@@ -320,7 +328,7 @@ public:
         using T4 = ElementType<IterType>;
         using NewType = CppLinq<T1, T2, T3, T4> ;
         NewType result;
-        for (const auto& ele : m_data)
+        for (const auto& ele : *this)
         {
             for (IterType it = begin; it != end; it++)
             {
@@ -335,9 +343,10 @@ public:
     }
 
     template <typename Condition2>
-    CppLinq<T1, T2, T3, Condition2> where(Condition2 condition)
+    auto where(Condition2 condition)
     {
-        CppLinq<T1, T2, T3, Condition2> linq(m_data, condition);
+        auto cond = [&](const auto& o) -> bool { return condition(o.var1, o.var2, o.var3); };
+        CppLinq<T1, T2, T3, decltype(cond)> linq(m_data, cond);
         return linq;
     }
 
@@ -346,7 +355,7 @@ public:
     {
         auto sortFunc = [&](const auto& l, const auto& r){ 
                 auto lKey = getOrderKey(l.var1, l.var2, l.var3);
-                auto rKey = getOrderKey(r.var2, r.var2, r.var3);
+                auto rKey = getOrderKey(r.var1, r.var2, r.var3);
                 return order == Order::Ascend ? lKey < rKey : lKey > rKey;
             };
         std::sort(super::m_begin, super::m_end, sortFunc);
@@ -397,7 +406,7 @@ public:
         super::m_end = m_data.end();
     }
 
-    CppLinq(std::vector<Data<T1, T2>>& v) : super([](const auto&){return true;})
+    CppLinq(std::vector<Data<T1, T2>>& v, WhereCondition condition) : super(condition)
     {
         std::swap(m_data, v);
         super::m_begin = m_data.begin();
@@ -418,7 +427,7 @@ public:
     {
         using T3 = ElementType<IterType>;
         CppLinq<T1, T2, T3, DefaultCondition<Data<T1, T2, T3>>> result;
-        for (const auto& ele : m_data)
+        for (const auto& ele : *this)
         {
             for (auto it = begin; it != end; it++)
             {
@@ -433,9 +442,10 @@ public:
     }
 
     template <typename Condition2>
-    CppLinq<T1, T2, Condition2> where(Condition2 condition)
+    auto where(Condition2 condition)
     {
-        CppLinq<T1, T2, Condition2> linq(m_data, condition);
+        auto cond = [&](const auto& o) -> bool { return condition(o.var1, o.var2); };
+        CppLinq<T1, T2, decltype(cond)> linq(m_data, cond);
         return linq;
     }
 
@@ -444,7 +454,7 @@ public:
     {
         auto sortFunc = [&](const auto& l, const auto& r){ 
                 auto lKey = getOrderKey(l.var1, l.var2);
-                auto rKey = getOrderKey(r.var2, r.var2);
+                auto rKey = getOrderKey(r.var1, r.var2);
                 return order == Order::Ascend ? lKey < rKey : lKey > rKey;
             };
         std::sort(super::m_begin, super::m_end, sortFunc);
@@ -545,9 +555,6 @@ auto from(IterType begin, IterType end)
 #ifdef USE_CPPLINQ_MACRO
 
 #define FROM(o) zen::from(std::begin(o), std::end(o))
-#define WHERE(condition) .where([](const auto& o) { return condition; })
-#define VA_ARGS(...) , ##__VA_ARGS__
-#define ORDERBY(key, ...) .orderBy([](const auto& o) { return key; } VA_ARGS(__VA_ARGS__))
 #define DESCEND zen::Order::Descend
 #define TAKE(count) .take(count)
 #define SKIP(count) .skip(count)
@@ -557,12 +564,25 @@ auto from(IterType begin, IterType end)
 #define SUM() .sum()
 #define AVERAGE() .average()
 
+#define WHERE(condition) .where([](const auto& o) -> bool { return condition; })
+#define WHERE2(condition) .where([](const auto& o1, const auto& o2) -> bool { return condition; })
+#define WHERE3(condition) .where([](const auto& o1, const auto& o2, const auto& o3) -> bool { return condition; })
+#define WHERE4(condition) .where([](const auto& o1, const auto& o2, const auto& o3, const auto& o4) -> bool { return condition; })
+
 #define SELECT(...) .select([](const auto& o) { return std::make_tuple(__VA_ARGS__); })
 #define SELECT2(...) .select([](const auto& o1, const auto& o2) { return std::make_tuple(__VA_ARGS__); })
 #define SELECT3(...) .select([](const auto& o1, const auto& o2, const auto& o3) { return std::make_tuple(__VA_ARGS__); })
+#define SELECT4(...) .select([](const auto& o1, const auto& o2, const auto& o3, const auto& o4) { return std::make_tuple(__VA_ARGS__); })
 
-#define JOIN(o) .join(std::begin(o), std::end(o), [](const auto& o1, const auto& o2)
-#define JOIN2(o) .join(std::begin(o), std::end(o), [](const auto& o1, const auto& o2, const auto& o3)
+#define VA_ARGS(...) , ##__VA_ARGS__
+#define ORDERBY(key, ...) .orderBy([](const auto& o) { return key; } VA_ARGS(__VA_ARGS__))
+#define ORDERBY2(key, ...) .orderBy([](const auto& o1, const auto& o2) { return key; } VA_ARGS(__VA_ARGS__))
+#define ORDERBY3(key, ...) .orderBy([](const auto& o1, const auto& o2, const auto& o3) { return key; } VA_ARGS(__VA_ARGS__))
+#define ORDERBY4(key, ...) .orderBy([](const auto& o1, const auto& o2, const auto& o3, const auto& o4) { return key; } VA_ARGS(__VA_ARGS__))
+
+#define JOIN(o) .join(std::begin(o), std::end(o), [](const auto& o1, const auto& o2) -> bool
+#define JOIN2(o) .join(std::begin(o), std::end(o), [](const auto& o1, const auto& o2, const auto& o3) -> bool
+#define JOIN3(o) .join(std::begin(o), std::end(o), [](const auto& o1, const auto& o2, const auto& o3, cosnt auto& o4) -> bool
 
 #define ON(...)  { return __VA_ARGS__; })
 
