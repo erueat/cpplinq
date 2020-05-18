@@ -4,3 +4,5 @@ obj
 *.user
 build
 .vscode
+*.sdf
+*.suo
