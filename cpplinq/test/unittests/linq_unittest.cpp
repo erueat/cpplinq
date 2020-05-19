@@ -162,26 +162,29 @@ TEST(CppLinq, join)
         int n;
     };
 
-    Record1 records1[] = { { 1, 100 }, { 2, 200 }, { 1, 300 }, { 5, 341 }, { 5, 400 } };
+    Record1 records1[] = { { 1, 100 }, { 2, 200 }, { 1, 300 }, { 5, 341 }, { 5, 400 }, { 5, 965 } };
     Record2 records2[] = { { 1, 3 }, { 3, 44 }, { 5, 93 } };
 
     auto result1 = FROM (records1)
         JOIN (records2) ON (o1.x == o2.a)
         WHERE2 (o1.y % 100 == 0)
         ORDERBY2 (o1.y, DESCEND)
+        SKIP (1)
         SELECT2 (o1.x, o1.y, o2.b);
 
-    std::vector<std::tuple<int, int, int>> expectedResult1 = { { 5, 400, 93 }, { 1, 300, 3 }, { 1, 100, 3 } };
+    std::vector<std::tuple<int, int, int>> expectedResult1 = { { 1, 300, 3 }, { 1, 100, 3 } };
     EXPECT_EQ(result1, expectedResult1);
 
-    Record3 records3[] = { { 0, 100 }, { 2, 22 }, { 3, 341 } };
+    Record3 records3[] = { { 0, 100 }, { 2, 22 }, { 3, 341 }, { 4, 965 } };
 
     auto result2 = FROM (records1)
         JOIN (records2) ON (o1.x == o2.a)
         WHERE2 (o1.x == 5)
         JOIN2 (records3) ON (o1.y == o3.n)
+        ORDERBY3 (o1.y, DESCEND)
+        TAKE (1)
         SELECT3 (o1.x, o1.y, o2.b, o3.m);
     
-    std::vector<std::tuple<int, int, int, int>> expectedResult2 = { { 5, 341, 93, 3 } };
+    std::vector<std::tuple<int, int, int, int>> expectedResult2 = { { 5, 965, 93, 4 } };
     EXPECT_EQ(result2, expectedResult2);
 }

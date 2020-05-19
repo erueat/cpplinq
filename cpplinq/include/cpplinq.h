@@ -2,10 +2,8 @@
 #include <vector>
 #include <algorithm>
 
-
 namespace zen
 {
-
 template <typename IterType>
 using ElementType = typename std::decay<decltype(*std::declval<IterType>())>::type;
 
@@ -574,11 +572,11 @@ auto from(IterType begin, IterType end)
 #define SELECT3(...) .select([](const auto& o1, const auto& o2, const auto& o3) { return std::make_tuple(__VA_ARGS__); })
 #define SELECT4(...) .select([](const auto& o1, const auto& o2, const auto& o3, const auto& o4) { return std::make_tuple(__VA_ARGS__); })
 
-#define VA_ARGS(...) , ##__VA_ARGS__
-#define ORDERBY(key, ...) .orderBy([](const auto& o) { return key; } VA_ARGS(__VA_ARGS__))
-#define ORDERBY2(key, ...) .orderBy([](const auto& o1, const auto& o2) { return key; } VA_ARGS(__VA_ARGS__))
-#define ORDERBY3(key, ...) .orderBy([](const auto& o1, const auto& o2, const auto& o3) { return key; } VA_ARGS(__VA_ARGS__))
-#define ORDERBY4(key, ...) .orderBy([](const auto& o1, const auto& o2, const auto& o3, const auto& o4) { return key; } VA_ARGS(__VA_ARGS__))
+#define OPT_ARGS(...) , ##__VA_ARGS__
+#define ORDERBY(key, ...) .orderBy([](const auto& o) { return key; } OPT_ARGS(__VA_ARGS__))
+#define ORDERBY2(key, ...) .orderBy([](const auto& o1, const auto& o2) { return key; } OPT_ARGS(__VA_ARGS__))
+#define ORDERBY3(key, ...) .orderBy([](const auto& o1, const auto& o2, const auto& o3) { return key; } OPT_ARGS(__VA_ARGS__))
+#define ORDERBY4(key, ...) .orderBy([](const auto& o1, const auto& o2, const auto& o3, const auto& o4) { return key; } OPT_ARGS(__VA_ARGS__))
 
 #define JOIN(o) .join(std::begin(o), std::end(o), [](const auto& o1, const auto& o2) -> bool
 #define JOIN2(o) .join(std::begin(o), std::end(o), [](const auto& o1, const auto& o2, const auto& o3) -> bool
